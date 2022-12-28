@@ -1,31 +1,48 @@
-class Node:
-    def __init__(self, data=None, next_node=None):
-        self.data = data
-        self.next_node = next_node
-
-
-class Data:
-    def __init__(self, key, value):
-        self.key = key
-        self.value = value
-
-
 class HashTable:
     def __init__(self, table_size):
         self.table_size = table_size
         self.hash_table = [None] * table_size
 
+
     def custom_hash(self, key):
-        """Возвращает целове число (хеш-значение), находящийся в пределах от 0 до table_size"""
-        pass
+        return sum(ord(x) for x in str(key)) % self.table_size
+
 
     def add_key_value(self, key, value):
-        """
-        Добавить новый узел Node(Data(key, value) в хеш-таблицу hash_table[hashed_key]=Node(...)
-        При возникновении коллизии строится связанный список.
-        """
-        pass
+        index = self.custom_hash(key)
+        position = self.hash_table[index]
+
+        if isinstance(position, list):
+            for i, j in enumerate(position):
+                k, v = j
+                if k == key:
+                    self.hash_table[index][i] = (key, value)
+                    break
+
+            self.hash_table[index].append((key, value))
+
+        elif position:
+            if position[0] == key:
+                self.hash_table[index] = (key, value)
+                return
+            self.hash_table[index] = [position, (key, value)]
+
+        else:
+            self.hash_table[index] = (key, value)
+
 
     def get_value(self, key):
-        """Получить значение (атрибут value класса Data) по ключу key"""
-        pass
+        ind = self.custom_hash(key)
+        position = self.hash_table[ind]
+
+        if isinstance(position, list):
+            for k, v in position:
+                if k == key:
+                    return v
+
+        if not position:
+            return False
+
+        return position[1]
+
+
